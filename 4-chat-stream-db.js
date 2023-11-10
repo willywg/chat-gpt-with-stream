@@ -55,20 +55,16 @@ app.get('/stream-chat', async (req, res) => {
       ],
     });
 
-    // let fullResponse = '';
     // Iteramos sobre la respuesta de OpenAI
     for await (const chunk of response) {
       if (chunk.choices[0].finish_reason === 'stop') { // Cuando Chat GPT termina de responder
         res.write('event: end-chat\n'); // Evento tipo end
         res.write('data: [CHAT-FINALIZADO]\n\n'); // Enviamos el mensaje al cliente
         res.end();
-
-        // console.log(fullResponse);
         return;
       }
       else {
         const assistantReply = encodeURIComponent(chunk.choices[0].delta.content);
-        // fullResponse += chunk.choices[0].delta.content;
 
         res.write('event: response-chat\n'); // Evento tipo token
         res.write(`data: ${assistantReply}\n\n`); // Enviamos el mensaje al cliente
