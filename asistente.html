@@ -28,7 +28,8 @@
           userQuestionBuble.innerText = question;
           assistantAnswerBuble.innerText = '';
 
-          const eventSource = new EventSource(`http://localhost:3000/stream-chat?message=${question}`);
+          const roomId = '123'
+          const eventSource = new EventSource(`http://localhost:3000/stream-chat/${roomId}?message=${question}`);
 
           eventSource.addEventListener('response-chat', (event) => {
             const data = decodeURIComponent(event.data).replace(/\+/g, ' '); // reemplazar los + por espacios
