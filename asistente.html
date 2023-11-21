@@ -9,7 +9,18 @@
     <!-- Include DaisyUI CSS -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@1.13.0/dist/full.css" rel="stylesheet">
 
+    <style>
+        code {
+            background-color: #000;
+            color: #fff;
+            border-radius: 5px;
+            padding: 2px 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+
     <!-- Script para enviar una pregunta por SSE a /strean-chat -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const sendQuestionBtn = document.getElementById('send-question-btn');
@@ -28,20 +39,22 @@
           userQuestionBuble.innerText = question;
           assistantAnswerBuble.innerText = '';
 
-          const roomId = '123'
+          const roomId = '125'
           const eventSource = new EventSource(`http://localhost:3000/stream-chat/${roomId}?message=${question}`);
 
           eventSource.addEventListener('response-chat', (event) => {
             const data = decodeURIComponent(event.data).replace(/\+/g, ' '); // reemplazar los + por espacios
-            console.log('Inicio del chat');
             console.log(data);
 
             assistantAnswerBuble.innerText += data;
             chatContainer.scrollTop = chatContainer.scrollHeight;
+            questionInput.value = '';
+            questionInput.focus();
           });
 
           eventSource.addEventListener('end-chat', (event) => {
             console.log('Fin del chat');
+            assistantAnswerBuble.innerHTML = marked.parse(assistantAnswerBuble.innerText);
             eventSource.close();
           });
 
