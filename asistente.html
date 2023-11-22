@@ -24,39 +24,65 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const sendQuestionBtn = document.getElementById('send-question-btn');
-        const userQuestion = document.getElementById('user-question');
-        const assistantAnswer = document.getElementById('assitant-answer');
+        // const assistantAnswer = document.getElementById('assitant-answer');
+        const chatContainerBubbles = document.getElementById('chat-container-bubbles');
 
         sendQuestionBtn.addEventListener('click', () => {
-          // enviar una pregunta por EventSource a /strean-chat
-          const questionInput = document.getElementById('question-input');
-          const question = questionInput.value;
-          const userQuestionBuble = userQuestion.querySelector('p');
-          const assistantAnswerBuble = assistantAnswer.querySelector('p');
-          const chatContainer = document.getElementById('chat-container');
-          
+            // enviar una pregunta por EventSource a /strean-chat
+            const questionInput = document.getElementById('question-input');
+            const question = questionInput.value;
+            const chatContainer = document.getElementById('chat-container');          
 
-          userQuestionBuble.innerText = question;
-          assistantAnswerBuble.innerText = '';
+            // Crea un nuevo elemento de pregunta del usuario
+            const userQuestion = document.createElement('div');
+            userQuestion.className = 'flex mb-2 justify-end';
+            userQuestion.innerHTML = `
+                <div class="mr-2">
+                    <div class="bg-gray-200 rounded-lg p-2">
+                    <p class="text-sm">${question}</p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    <img class="h-8 w-8 rounded-full" src="https://cdn-icons-png.flaticon.com/512/4079/4079259.png" alt="Usuario">
+                </div>
+            `;
+            chatContainerBubbles.appendChild(userQuestion);
 
-          const roomId = '125'
-          const eventSource = new EventSource(`http://localhost:3000/stream-chat/${roomId}?message=${question}`);
+            // Crear un nuevo elemento de respuesta del asistente
+            const assistantAnswer = document.createElement('div');
+            assistantAnswer.className = 'flex mb-2';
+            assistantAnswer.innerHTML = `
+                <div class="flex-shrink-0">
+                    <img class="h-8 w-8 rounded-full" src="https://cdn-icons-png.flaticon.com/512/10479/10479785.png" alt="Asistente">
+                </div>
+                <div class="ml-2">
+                    <div class="bg-blue-400 text-white rounded-lg p-2">
+                    <p class="text-sm assistant-answer-bubble"></p>
+                    </div>
+                </div>
+            `;
+            chatContainerBubbles.appendChild(assistantAnswer);
+            const assistantAnswerBubble = assistantAnswer.querySelector('.assistant-answer-bubble');
 
-          eventSource.addEventListener('response-chat', (event) => {
-            const data = decodeURIComponent(event.data).replace(/\+/g, ' '); // reemplazar los + por espacios
-            console.log(data);
+            const roomId = '125'
+            const eventSource = new EventSource(`http://localhost:3000/stream-chat/${roomId}?message=${question}`);
+            let assistantAnswerText = '';
 
-            assistantAnswerBuble.innerText += data;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            questionInput.value = '';
-            questionInput.focus();
-          });
+            eventSource.addEventListener('response-chat', (event) => {
+                const data = decodeURIComponent(event.data).replace(/\+/g, ' '); // reemplazar los + por espacios
+                console.log(data);
 
-          eventSource.addEventListener('end-chat', (event) => {
-            console.log('Fin del chat');
-            assistantAnswerBuble.innerHTML = marked.parse(assistantAnswerBuble.innerText);
-            eventSource.close();
-          });
+                assistantAnswerBubble.innerText += data;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                questionInput.value = '';
+                questionInput.focus();
+            });
+
+            eventSource.addEventListener('end-chat', (event) => {
+                console.log('Fin del chat');
+                assistantAnswerBubble.innerHTML = marked.parse(assistantAnswerBubble.innerText);
+                eventSource.close();
+            });
 
 
 
@@ -71,7 +97,7 @@
                 <h2 class="text-2xl font-bold mb-2">Chatbot</h2>
             </div>
             <div id='chat-container' class="bg-gray-100 p-4 mb-4 rounded-lg overflow-y-auto max-h-full">
-                <div class="flex flex-col">
+                <div id="chat-container-bubbles" class="flex flex-col">
                     <div class="flex mb-2">
                         <div class="flex-shrink-0">
                             <img class="h-8 w-8 rounded-full" src="https://cdn-icons-png.flaticon.com/512/10479/10479785.png" alt="Asistente">
