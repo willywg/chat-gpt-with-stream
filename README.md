@@ -4,7 +4,7 @@ Este es un proyecto de chatbot para GDG.
 
 ## Requisitos
 
-- Node.js (idela v18.18.2)
+- Node.js (ideal v18.18.2)
 - Sqlite v3
 
 
