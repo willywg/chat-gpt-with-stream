@@ -64,7 +64,7 @@
             chatContainerBubbles.appendChild(assistantAnswer);
             const assistantAnswerBubble = assistantAnswer.querySelector('.assistant-answer-bubble');
 
-            const roomId = '125'
+            const roomId = '123'
             const eventSource = new EventSource(`http://localhost:3000/stream-chat/${roomId}?message=${question}`);
             let assistantAnswerText = '';
 

@@ -91,7 +91,7 @@ app.get('/stream-chat/:room_id', async (req, res) => {
           }
         });
 
-        // console.log(fullAssitantResponse);
+        console.log(fullAssitantResponse);
         return;
       }
       else {
